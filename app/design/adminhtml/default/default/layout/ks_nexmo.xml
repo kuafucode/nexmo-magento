@@ -29,7 +29,7 @@
 <layout>
     <adminhtml_index_login>
         <reference name="form.additional.info">
-            <block name="ks_nexmo/adminhtml_login_nexmo" template=""/>
+            <block type="ks_nexmo/adminhtml_login_code" name="login.nexmo.code" template="ks_nexmo/login/code.phtml"/>
         </reference>
     </adminhtml_index_login>
 </layout>

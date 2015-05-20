@@ -6,6 +6,11 @@
         </KuafuSoft_Nexmo>
     </modules>
     <global>
+        <blocks>
+            <ks_nexmo>
+                <class>KuafuSoft_Nexmo_Block</class>
+            </ks_nexmo>
+        </blocks>
         <helpers>
             <ks_nexmo>
                 <class>KuafuSoft_Nexmo_Helper</class>
@@ -40,4 +45,22 @@
             </updates>
         </layout>
     </frontend>
+    <adminhtml>
+        <translate>
+            <modules>
+                <KuafuSoft_Nexmo>
+                    <files>
+                        <default>KuafuSoft_Nexmo.csv</default>
+                    </files>
+                </KuafuSoft_Nexmo>
+            </modules>
+        </translate>
+        <layout>
+            <updates>
+                <ks_nexmo>
+                    <file>ks_nexmo.xml</file>
+                </ks_nexmo>
+            </updates>
+        </layout>
+    </adminhtml>
 </config>
