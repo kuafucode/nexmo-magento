@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<layout>
+    <checkout_onepage_review>
+        <reference name="checkout.onepage.review.info.items.after">
+            <block type="ks_nexmo/checkout_onepage_code" name="checkout.onepage.nexmo.code" template="ks_nexmo/checkout/onepage/review/code.phtml"/>
+        </reference>
+    </checkout_onepage_review>
+</layout>
