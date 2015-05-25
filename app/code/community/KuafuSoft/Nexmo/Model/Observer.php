@@ -20,6 +20,40 @@ class KuafuSoft_Nexmo_Model_Observer
         return $this;
     }
 
+    public function sendBillingCode(Varien_Event_Observer $observer)
+    {
+        /* @var $action Mage_Core_Controller_Varien_Action */
+        $action = $observer->getControllerAction();
+        /* @var $quote Mage_Sales_Model_Quote */
+        $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
+        if($phone = $quote->getBillingAddress()->getTelephone()) {
+            $result = $this->_getApi()->sendCartCode($quote);
+            if(is_string($result)) {
+                Mage::throwException($result);
+            }
+        }
+        return $this;
+    }
+
+    public function validateBillingNumber(Varien_Event_Observer $observer)
+    {
+        /* @var $action Mage_Core_Controller_Varien_Action */
+        $action = $observer->getControllerAction();
+        if($nexmo = $action->getRequest()->getPost('nexmo')) {
+            if(isset($nexmo['code'])) {
+                /* @var $quote Mage_Sales_Model_Quote */
+                $quote = Mage::getSingleton('checkout/type_onepage')-getQuote();
+                $status = $this->_getApi()->check($quote->getNexmoId(), $nexmo['code']);
+                if(true === $status) {
+                    $quote->setNexmoId('')->save();
+                }
+                else {
+                    Mage::throwException($status);
+                }
+            }
+        }
+    }
+
     /**
      * @return KuafuSoft_Nexmo_Model_Api
      */

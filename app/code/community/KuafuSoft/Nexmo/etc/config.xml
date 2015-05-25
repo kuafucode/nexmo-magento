@@ -2,7 +2,7 @@
 <config>
     <modules>
         <KuafuSoft_Nexmo>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </KuafuSoft_Nexmo>
     </modules>
     <global>
@@ -44,6 +44,33 @@
                 </ks_nexmo>
             </updates>
         </layout>
+        <routers>
+            <nexmo>
+                <use>standard</use>
+                <args>
+                    <module>KuafuSoft_Nexmo</module>
+                    <frontName>nexmo</frontName>
+                </args>
+            </nexmo>
+        </routers>
+        <events>
+            <controller_action_postdispatch_checkout_onepage_savePayment>
+                <observers>
+                    <sendBillingCode>
+                        <class>ks_nexmo/observer</class>
+                        <method>sendBillingCode</method>
+                    </sendBillingCode>
+                </observers>
+            </controller_action_postdispatch_checkout_onepage_savePayment>
+            <controller_action_predispatch_checkout_onepage_saveOrder>
+                <observers>
+                    <validateBillingNumber>
+                        <class>ks_nexmo/observer</class>
+                        <method>validateBillingNumber</method>
+                    </validateBillingNumber>
+                </observers>
+            </controller_action_predispatch_checkout_onepage_saveOrder>
+        </events>
     </frontend>
     <adminhtml>
         <translate>
@@ -62,5 +89,24 @@
                 </ks_nexmo>
             </updates>
         </layout>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <ks_nexmo translate="title" module="KuafuSoft_Nexmo">
+                                            <title>Nexmo Settings</title>
+                                        </ks_nexmo>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
     </adminhtml>
 </config>

@@ -26,9 +26,8 @@
 
 class KuafuSoft_Nexmo_Block_Adminhtml_Login_Code extends Mage_Adminhtml_Block_Template
 {
-
     public function getCodeUrl()
     {
-        return $this->getUrl('nexmo/code');
+        return $this->getUrl('nexmo/code/adminlogin');
     }
 }

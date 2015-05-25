@@ -14,14 +14,14 @@ class KuafuSoft_Nexmo_Model_Api
     {
         $this->_httpClient = new Varien_Http_Client();
         $this->_httpClient
-            ->setParameterGet('api_key', $this->_getConfig('api_key'))
-            ->setParameterGet('api_secret', $this->_getConfig('api_secret'))
+            ->setParameterGet('api_key', $this->_getConfig('key'))
+            ->setParameterGet('api_secret', $this->_getConfig('secret'))
             ->setConfig(array('timeout' => $this->_getConfig('timeout')));
     }
 
     protected function _getConfig($key)
     {
-        return Mage::getStoreConfig('kuafusoft/nexmo/' . $key);
+        return Mage::getStoreConfig('ks_nexmo/settings/' . $key);
     }
 
     protected function _sendCode($brand, $number, $model)
@@ -29,7 +29,7 @@ class KuafuSoft_Nexmo_Model_Api
         $response = $this->_httpClient
             ->setParameterGet('number', $number)
             ->setParameterGet('brand', $brand)
-            ->setUri(self::URL_CHECK)
+            ->setUri(self::URL_REQUEST)
             ->request('GET')
             ->getBody();
 
@@ -58,13 +58,13 @@ class KuafuSoft_Nexmo_Model_Api
 
     public function sendAdminLoginCode($user)
     {
-        $brand = $this->_helper()->__('admin access code');
+        $brand = $this->_helper()->__('admin code');
         return $this->_sendCode($brand, $user->getPhone(), $user);
     }
 
     public function sendCartCode(Mage_Sales_Model_Quote $quote)
     {
-        $brand = $this->_helper()->__('checkout access code');
+        $brand = $this->_helper()->__('checkout code');
         return $this->_sendCode($brand, $quote->getBillingAddress()->getTelephone(), $quote);
     }
 

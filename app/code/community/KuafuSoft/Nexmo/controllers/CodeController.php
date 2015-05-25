@@ -1,37 +1,5 @@
 <?php
-/**
- * Magento
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magento.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magento.com for more information.
- *
- * @category    Mage
- * @package     Mage_Adminhtml
- * @copyright  Copyright (c) 2006-2015 X.commerce, Inc. (http://www.magento.com)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- */
-
-/**
- * Index admin controller
- *
- * @category    Mage
- * @package     Mage_Adminhtml
- * @author      Magento Core Team <core@magentocommerce.com>
- */
-class KuafuSoft_Nexmo_NexmoController extends Mage_Core_Controller_Varien_Action
+class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Varien_Action
 {
     /**
      * Administrator login action
@@ -47,7 +15,15 @@ class KuafuSoft_Nexmo_NexmoController extends Mage_Core_Controller_Varien_Action
             $user = Mage::getModel('admin/user');
             if($user->authenticate($loginData['username'], $loginData['password'])){
                 if($user->getPhone()) {
-                    $this->_getApi()->sendAdminLoginCode($user);
+                    $status = $this->_getApi()->sendAdminLoginCode($user);
+                    if($status === true) {
+                        $result['success'] = true;
+                        $result['message'] = Mage::helper('ks_nexmo')->__('An access code has been sent to your phone number, please enter the code.');
+                    }
+                    else {
+                        $result['success'] = false;
+                        $result['message'] = $status;
+                    }
                 }
                 else {
                     $result['success'] = true;
@@ -56,8 +32,76 @@ class KuafuSoft_Nexmo_NexmoController extends Mage_Core_Controller_Varien_Action
             }
         }
 
-        $this->loadLayout();
-        $this->renderLayout();
+        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+    }
+
+    /**
+     * Send verify request for billing
+     */
+    public function ordercodeAction()
+    {
+        if ($this->_expireAjax()) {
+            return null;
+        }
+        $result = array();
+
+        /* @var $quote Mage_Sales_Model_Quote */
+        $quote = Mage::getSingleton('checkout/session')->getQuote();
+
+        if ($phone = $quote->getBillingAddress()->getTelephone()) {
+            $status = $this->_getApi()->sendCartCode($quote);
+            if($status === true) {
+                $result['success'] = true;
+                $result['message'] = Mage::helper('ks_nexmo')->__('An access code has been sent to the billing phone number, please enter the code.');
+            }
+            else {
+                $result['success'] = false;
+                $result['message'] = $status;
+            }
+        }
+        else {
+            $result['success'] = false;
+            $result['message'] = Mage::helper('ks_nexmo')->__('Please provide the phone number in billing address');
+        }
+
+        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+    }
+
+    /**
+     * Validate ajax request and redirect on failure
+     *
+     * @return bool
+     */
+    protected function _expireAjax()
+    {
+        /* @var $quote Mage_Sales_Model_Quote */
+        $quote = Mage::getSingleton('checkout/session')->getQuote();
+        if (!$quote->hasItems()
+            || $quote->getHasError()
+            || $quote->getIsMultiShipping()
+        ) {
+            $this->_ajaxRedirectResponse();
+            return true;
+        }
+        if (Mage::getSingleton('checkout/session')->getCartWasUpdated(true)) {
+            $this->_ajaxRedirectResponse();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Send Ajax redirect response
+     *
+     * @return KuafuSoft_Nexmo_NexmoController
+     */
+    protected function _ajaxRedirectResponse()
+    {
+        $this->getResponse()
+            ->setHeader('HTTP/1.1', '403 Session Expired')
+            ->setHeader('Login-Required', 'true')
+            ->sendResponse();
+        return $this;
     }
 
     /**
