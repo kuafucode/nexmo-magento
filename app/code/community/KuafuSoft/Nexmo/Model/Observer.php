@@ -29,7 +29,11 @@ class KuafuSoft_Nexmo_Model_Observer
         if($phone = $quote->getBillingAddress()->getTelephone()) {
             $result = $this->_getApi()->sendCartCode($quote);
             if(is_string($result)) {
-                Mage::throwException($result);
+                $result = array();
+                $result['success']  = false;
+                $result['error']    = true;
+                $result['error_messages'] = $result;
+                $action->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
             }
         }
         return $this;
@@ -39,19 +43,35 @@ class KuafuSoft_Nexmo_Model_Observer
     {
         /* @var $action Mage_Core_Controller_Varien_Action */
         $action = $observer->getControllerAction();
-        if($nexmo = $action->getRequest()->getPost('nexmo')) {
-            if(isset($nexmo['code'])) {
-                /* @var $quote Mage_Sales_Model_Quote */
-                $quote = Mage::getSingleton('checkout/type_onepage')-getQuote();
-                $status = $this->_getApi()->check($quote->getNexmoId(), $nexmo['code']);
-                if(true === $status) {
-                    $quote->setNexmoId('')->save();
-                }
-                else {
-                    Mage::throwException($status);
+        if(Mage::getStoreConfigFlag('ks_nexmo/settings/enable_billing_verify')) {
+            if($nexmo = $action->getRequest()->getPost('nexmo')) {
+                if(isset($nexmo['code'])) {
+                    /* @var $quote Mage_Sales_Model_Quote */
+                    $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
+                    $status = $this->_getApi()->check($quote->getNexmoId(), $nexmo['code']);
+                    if(true === $status) {
+                        $quote->setNexmoId('')->save();
+                        return $this;
+                    }
+                    else {
+                        $result = array();
+                        $result['success']  = false;
+                        $result['error']    = true;
+                        $result['error_messages'] = $status;
+                        $action->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+                        $action->setFlag('', Mage_Core_Controller_Varien_Action::FLAG_NO_DISPATCH, true);
+                        return $this;
+                    }
                 }
             }
+            $result = array();
+            $result['success']  = false;
+            $result['error']    = true;
+            $result['error_messages'] = $this->__('Nexmo code not found.');
+            $action->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+            $action->setFlag('', Mage_Core_Controller_Varien_Action::FLAG_NO_DISPATCH, true);
         }
+        return $this;
     }
 
     /**

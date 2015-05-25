@@ -2,7 +2,10 @@
 class KuafuSoft_Nexmo_Model_Api
 {
     const URL_REQUEST = 'https://api.nexmo.com/verify/json';
-    const URL_CHECK = 'https://api.nexmo.com/check/json';
+    const URL_CHECK = 'https://api.nexmo.com/verify/check/json';
+
+    protected $_debug = false;
+
     /**
      * HTTP client
      *
@@ -26,6 +29,9 @@ class KuafuSoft_Nexmo_Model_Api
 
     protected function _sendCode($brand, $number, $model)
     {
+        if($this->_debug) {
+            return true;
+        }
         $response = $this->_httpClient
             ->setParameterGet('number', $number)
             ->setParameterGet('brand', $brand)
@@ -33,7 +39,6 @@ class KuafuSoft_Nexmo_Model_Api
             ->request('GET')
             ->getBody();
 
-        $response = Zend_Json::decode($response);
         if( isset($response['status']) ) {
             switch($response['status']) {
                 case 0:
@@ -70,6 +75,9 @@ class KuafuSoft_Nexmo_Model_Api
 
     public function check($requestId, $code)
     {
+        if($this->_debug) {
+            return true;
+        }
         $response = $this->_httpClient
             ->setParameterGet('request_id', $requestId)
             ->setParameterGet('code', $code)
@@ -77,12 +85,16 @@ class KuafuSoft_Nexmo_Model_Api
             ->request('GET')
             ->getBody();
 
+        var_dump($requestId,$code);
+        echo $response;exit();
+
         $response = Zend_Json::decode($response);
         if( isset($response['status']) ) {
             switch($response['status']) {
                 case 0:
                     return true;
                 case 16:
+                case 3:
                     return $this->_helper()->__('Wrong access code');
                 case 101:
                     return $this->_helper()->__('Please request access code first');

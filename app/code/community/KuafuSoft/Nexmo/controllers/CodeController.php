@@ -1,5 +1,5 @@
 <?php
-class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Varien_Action
+class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Front_Action
 {
     /**
      * Administrator login action
@@ -64,6 +64,7 @@ class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Varien_Action
             $result['message'] = Mage::helper('ks_nexmo')->__('Please provide the phone number in billing address');
         }
 
+        $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
     }
 
@@ -74,12 +75,15 @@ class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Varien_Action
      */
     protected function _expireAjax()
     {
+        $onepage = Mage::getSingleton('checkout/type_onepage');
         /* @var $quote Mage_Sales_Model_Quote */
-        $quote = Mage::getSingleton('checkout/session')->getQuote();
+        //$quote = Mage::getSingleton('checkout/session')->getQuote();
+        $quote = $onepage->getQuote();
         if (!$quote->hasItems()
             || $quote->getHasError()
             || $quote->getIsMultiShipping()
         ) {
+            var_dump($quote->getId(), $quote->hasItems(), $quote->getHasError(), $quote->getIsMultiShipping());exit();
             $this->_ajaxRedirectResponse();
             return true;
         }
