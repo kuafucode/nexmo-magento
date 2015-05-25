@@ -30,4 +30,12 @@ class KuafuSoft_Nexmo_Block_Adminhtml_Login_Code extends Mage_Adminhtml_Block_Te
     {
         return $this->getUrl('nexmo/code/adminlogin');
     }
+
+    protected function _toHtml()
+    {
+        if(!Mage::getStoreConfigFlag('ks_nexmo/settings/enable_admin_verify')) {
+            return '';
+        }
+        return parent::_toHtml();
+    }
 }

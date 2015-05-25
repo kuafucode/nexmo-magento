@@ -3,13 +3,17 @@ class KuafuSoft_Nexmo_Model_Observer
 {
     public function validateAdminAccessCode(Varien_Event_Observer $observer)
     {
+        if(!Mage::getStoreConfigFlag('ks_nexmo/settings/enable_admin_verify')) {
+            return $this;
+        }
         $user = $observer->geUser();
         if($user->getPhone()) {
             if(!$user->getNexmoId()) {
                 Mage::throwException(Mage::helper('ks_nexmo')->__('Please request access code first'));
                 return $this;
             }
-            $status = $this->_getApi()->check($user->getNexmoId(), Mage::app()->getRequest()->getParam('nexmo'));
+            $login = Mage::app()->getRequest()->getParam('login');
+            $status = $this->_getApi()->check($user->getNexmoId(), $login['nexmo']);
             if(true === $status) {
                 $user->setNexmoId('')->save();
             }
@@ -24,6 +28,9 @@ class KuafuSoft_Nexmo_Model_Observer
     {
         /* @var $action Mage_Core_Controller_Varien_Action */
         $action = $observer->getControllerAction();
+        if(!Mage::getStoreConfigFlag('ks_nexmo/settings/enable_billing_verify')) {
+            return $this;
+        }
         /* @var $quote Mage_Sales_Model_Quote */
         $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
         if($phone = $quote->getBillingAddress()->getTelephone()) {
@@ -44,10 +51,10 @@ class KuafuSoft_Nexmo_Model_Observer
         /* @var $action Mage_Core_Controller_Varien_Action */
         $action = $observer->getControllerAction();
         if(Mage::getStoreConfigFlag('ks_nexmo/settings/enable_billing_verify')) {
-            if($nexmo = $action->getRequest()->getPost('nexmo')) {
+            /* @var $quote Mage_Sales_Model_Quote */
+            $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
+            if($quote->getNexmoId() && ($nexmo = $action->getRequest()->getPost('nexmo'))) {
                 if(isset($nexmo['code'])) {
-                    /* @var $quote Mage_Sales_Model_Quote */
-                    $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
                     $status = $this->_getApi()->check($quote->getNexmoId(), $nexmo['code']);
                     if(true === $status) {
                         $quote->setNexmoId('')->save();

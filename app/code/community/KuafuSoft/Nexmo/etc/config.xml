@@ -10,6 +10,11 @@
             <ks_nexmo>
                 <class>KuafuSoft_Nexmo_Block</class>
             </ks_nexmo>
+            <adminhtml>
+                <rewrite>
+                    <permissions_user_edit_tab_main>KuafuSoft_Nexmo_Block_Adminhtml_Permissions_User_Edit_Tab_Main</permissions_user_edit_tab_main>
+                </rewrite>
+            </adminhtml>
         </blocks>
         <helpers>
             <ks_nexmo>
@@ -89,6 +94,24 @@
                 </ks_nexmo>
             </updates>
         </layout>
+        <events>
+            <controller_action_postdispatch_checkout_onepage_savePayment>
+                <observers>
+                    <sendBillingCode>
+                        <class>ks_nexmo/observer</class>
+                        <method>sendBillingCode</method>
+                    </sendBillingCode>
+                </observers>
+            </controller_action_postdispatch_checkout_onepage_savePayment>
+            <controller_action_predispatch_checkout_onepage_saveOrder>
+                <observers>
+                    <validateBillingNumber>
+                        <class>ks_nexmo/observer</class>
+                        <method>validateBillingNumber</method>
+                    </validateBillingNumber>
+                </observers>
+            </controller_action_predispatch_checkout_onepage_saveOrder>
+        </events>
         <acl>
             <resources>
                 <admin>
