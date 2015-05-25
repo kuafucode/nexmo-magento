@@ -1,0 +1,55 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kuafu
+ * Date: 5/24/15
+ * Time: 2:57 AM
+ */
+?>
+<form id="nexmo-form">
+    <input name="form_key" type="hidden" value="<?php echo Mage::getSingleton('core/session')->getFormKey() ?>" />
+    <label for="nexmo-code"><?php echo Mage::helper('ks_nexmo')->__('Nexmo Verification Code:') ?></label>
+    <br/>
+    <input type="text" name="nexmo[code]" id="nexmo-code" class="input-text required-entry"/>
+    <div class="validation-advice" id="advice-nexmo-code" style="display: none;"></div>
+</form>
+<span><?php echo Mage::helper('ks_nexmo')->__('(we had sent the code to your billing number)');?></span>
+<a href="#" id="change-code" onclick="window.requestCode(); return false;">get a new code</a>
+<script type="application/javascript">
+    Review.prototype.save = function(){
+        if (checkout.loadWaiting!=false) return;
+        var reviewFormValidator = new Validation($('nexmo-form'));
+        $('advice-nexmo-code').update('This is a required field.');
+        if(!reviewFormValidator.validate()) {
+            return;
+        }
+        checkout.setLoadWaiting('review');
+        var params = Form.serialize(payment.form);
+        if (this.agreementsForm) {
+            params += '&'+Form.serialize(this.agreementsForm);
+        }
+        params += '&'+Form.serialize($('nexmo-form'));
+        params.save = true;
+        var request = new Ajax.Request(
+            this.saveUrl,
+            {
+                method:'post',
+                parameters:params,
+                onComplete: this.onComplete,
+                onSuccess: this.onSave,
+                onFailure: checkout.ajaxFailure.bind(checkout)
+            }
+        );
+    };
+
+    window.requestCode = function (){
+        new Ajax.Request('<?php echo $this->getCodeUrl() ;?>', {
+            parameters: $('nexmo-form').serialize(true),
+            onComplete: function(response){
+                $('advice-nexmo-code').update(response.responseJSON.message);
+                Effect.Appear('advice-nexmo-code');
+            }
+        })
+    }
+
+</script>
