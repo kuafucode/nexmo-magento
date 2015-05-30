@@ -39,9 +39,13 @@ class KuafuSoft_Nexmo_Model_Api
             ->request('GET')
             ->getBody();
 
+        Mage::log($response, null, 'nexmo.log');
+
+        $response = Zend_Json::decode($response);
         if( isset($response['status']) ) {
             switch($response['status']) {
                 case 0:
+                case 10;
                     try {
                         $model->setNexmoId($response['request_id'])->save();
                     }
@@ -85,8 +89,7 @@ class KuafuSoft_Nexmo_Model_Api
             ->request('GET')
             ->getBody();
 
-        var_dump($requestId,$code);
-        echo $response;exit();
+        Mage::log($response, null, 'nexmo.log');
 
         $response = Zend_Json::decode($response);
         if( isset($response['status']) ) {

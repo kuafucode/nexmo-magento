@@ -34,12 +34,11 @@ class KuafuSoft_Nexmo_Model_Observer
         /* @var $quote Mage_Sales_Model_Quote */
         $quote = Mage::getSingleton('checkout/type_onepage')->getQuote();
         if($phone = $quote->getBillingAddress()->getTelephone()) {
-            $result = $this->_getApi()->sendCartCode($quote);
-            if(is_string($result)) {
+            $status = $this->_getApi()->sendCartCode($quote);
+            if(is_string($status)) {
                 $result = array();
                 $result['success']  = false;
-                $result['error']    = true;
-                $result['error_messages'] = $result;
+                $result['error']    = $status;
                 $action->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
             }
         }
