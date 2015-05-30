@@ -74,7 +74,7 @@ class KuafuSoft_Nexmo_Model_Observer
             $result = array();
             $result['success']  = false;
             $result['error']    = true;
-            $result['error_messages'] = $this->__('Nexmo code not found.');
+            $result['error_messages'] = Mage::helper('ks_nexmo')->__('Nexmo code not found.');
             $action->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
             $action->setFlag('', Mage_Core_Controller_Varien_Action::FLAG_NO_DISPATCH, true);
         }
