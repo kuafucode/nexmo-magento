@@ -39,8 +39,10 @@
             new Ajax.Request('<?php echo $this->getCodeUrl() ;?>', {
                 parameters: $('loginForm').serialize(true),
                 onComplete: function(response){
-                    console.log(response);
-                    $('advice-nexmo-code').update('test'); $('advice-nexmo-code').show();
+                    if(response.responseJSON.message) {
+                        $('advice-nexmo-code').update(response.responseJSON.message);
+                        Effect.Appear('advice-nexmo-code');
+                    }
                 }
             })
         }

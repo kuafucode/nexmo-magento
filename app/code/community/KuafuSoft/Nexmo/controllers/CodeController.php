@@ -30,8 +30,13 @@ class KuafuSoft_Nexmo_CodeController extends Mage_Core_Controller_Front_Action
                     $result['message'] = Mage::helper('ks_nexmo')->__('No phone number bind to this account, you can login without access code');
                 }
             }
+            else {
+                $result['success'] = false;
+                $result['message'] = Mage::helper('ks_nexmo')->__('Invalid username or password');
+            }
         }
 
+        $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
     }
 

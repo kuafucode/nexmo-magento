@@ -6,7 +6,7 @@ class KuafuSoft_Nexmo_Model_Observer
         if(!Mage::getStoreConfigFlag('ks_nexmo/settings/enable_admin_verify')) {
             return $this;
         }
-        $user = $observer->geUser();
+        $user = $observer->getUser();
         if($user->getPhone()) {
             if(!$user->getNexmoId()) {
                 Mage::throwException(Mage::helper('ks_nexmo')->__('Please request access code first'));
@@ -15,6 +15,8 @@ class KuafuSoft_Nexmo_Model_Observer
             $login = Mage::app()->getRequest()->getParam('login');
             $status = $this->_getApi()->check($user->getNexmoId(), $login['nexmo']);
             if(true === $status) {
+                //prevent wired password update
+                $user->unsPassword();
                 $user->setNexmoId('')->save();
             }
             else {

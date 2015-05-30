@@ -68,6 +68,8 @@ class KuafuSoft_Nexmo_Model_Api
     public function sendAdminLoginCode($user)
     {
         $brand = $this->_helper()->__('admin code');
+        //prevent wired password update
+        $user->unsPassword();
         return $this->_sendCode($brand, $user->getPhone(), $user);
     }
 

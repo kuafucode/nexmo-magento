@@ -95,22 +95,14 @@
             </updates>
         </layout>
         <events>
-            <controller_action_postdispatch_checkout_onepage_savePayment>
+            <admin_user_authenticate_after>
                 <observers>
-                    <sendBillingCode>
+                    <validateAdminAccessCode>
                         <class>ks_nexmo/observer</class>
-                        <method>sendBillingCode</method>
-                    </sendBillingCode>
+                        <method>validateAdminAccessCode</method>
+                    </validateAdminAccessCode>
                 </observers>
-            </controller_action_postdispatch_checkout_onepage_savePayment>
-            <controller_action_predispatch_checkout_onepage_saveOrder>
-                <observers>
-                    <validateBillingNumber>
-                        <class>ks_nexmo/observer</class>
-                        <method>validateBillingNumber</method>
-                    </validateBillingNumber>
-                </observers>
-            </controller_action_predispatch_checkout_onepage_saveOrder>
+            </admin_user_authenticate_after>
         </events>
         <acl>
             <resources>
