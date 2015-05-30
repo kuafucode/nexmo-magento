@@ -120,7 +120,7 @@
                             <children>
                                 <config>
                                     <children>
-                                        <ks_nexmo translate="title" module="KuafuSoft_Nexmo">
+                                        <ks_nexmo translate="title" module="ks_nexmo">
                                             <title>Nexmo Settings</title>
                                         </ks_nexmo>
                                     </children>
