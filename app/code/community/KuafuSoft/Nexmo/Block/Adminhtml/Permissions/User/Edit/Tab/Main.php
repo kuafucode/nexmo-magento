@@ -93,8 +93,7 @@ class KuafuSoft_Nexmo_Block_Adminhtml_Permissions_User_Edit_Tab_Main extends Mag
             'label' => Mage::helper('adminhtml')->__('Phone'),
             'id'    => 'customer_phone',
             'title' => Mage::helper('adminhtml')->__('Telephone'),
-            'class' => 'required-entry validate-telephone',
-            'required' => true,
+            'class' => 'validate-telephone',
         ));
 
         $fieldset->addField('current_password', 'obscure', array(
