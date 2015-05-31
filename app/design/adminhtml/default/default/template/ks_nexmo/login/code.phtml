@@ -41,7 +41,7 @@
                 onComplete: function(response){
                     if(response.responseJSON.message) {
                         $('advice-nexmo-code').update(response.responseJSON.message);
-                        Effect.Appear('advice-nexmo-code');
+                        setTimeout(function(){Validation.showAdvice($('nexmo-code'), $('advice-nexmo-code'));}, 1000);
                     }
                 }
             })

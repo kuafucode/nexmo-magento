@@ -47,7 +47,7 @@
             parameters: $('nexmo-form').serialize(true),
             onComplete: function(response){
                 $('advice-nexmo-code').update(response.responseJSON.message);
-                Effect.Appear('advice-nexmo-code');
+                setTimeout(function(){Validation.showAdvice($('nexmo-code'), $('advice-nexmo-code'));}, 1000);
             }
         })
     }
