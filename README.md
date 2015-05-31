@@ -12,3 +12,5 @@ after you save payment on one page checkout, a verify request will be sent autom
 
 3, 2 level admin authentication
 you can login admin account and change your phone number, via 'system->permission->user'.
+
+demo link: http://nexmo.kuafusoft.com/
